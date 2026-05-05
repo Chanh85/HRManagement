@@ -23,14 +23,14 @@ public class OrganizationController(IOrganizationService _service) : ControllerB
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] CreateOrganizationDto dto)
+    public async Task<IActionResult> Create(CreateOrganizationDto dto)
     {
         await _service.CreateAsync(dto);
         return StatusCode(201, "Tạo phòng ban thành công");
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateOrganizationDto dto)
+    public async Task<IActionResult> Update(Guid id, UpdateOrganizationDto dto)
     {
         if (id != dto.Id) return BadRequest("ID không khớp!");
 

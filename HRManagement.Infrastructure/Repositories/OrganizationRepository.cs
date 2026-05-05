@@ -3,6 +3,7 @@ using HRManagement.Application.Organization.Interfaces;
 using HRManagement.Domain.Entities;
 using HRManagement.Infrastructure.Data;
 using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -15,10 +16,10 @@ namespace HRManagement.Infrastructure.Repositories
         private readonly AppDbContext _context;
         private readonly string _connectionString;
 
-        public OrganizationRepository(AppDbContext context, string connectionString)
+        public OrganizationRepository(AppDbContext context, IConfiguration config)
         {
             _context = context;
-            _connectionString = connectionString;
+            _connectionString = config.GetConnectionString("DefaultConnection")!;
         }
 
         //--EFCore-- write queries
