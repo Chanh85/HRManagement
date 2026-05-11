@@ -1,18 +1,19 @@
 ﻿using HRManagement.Application.Employee.Interfaces;
 using HRManagement.Domain.Entities;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace HRManagement.API.Controllers;
 
 [Route("api/[controller]")]
-[ApiController]
-public class EmployeeController(IEmployeeService _employeeService) : ControllerBase
+public class EmployeeController(IEmployeeService _employeeService) : AppControllerBase
 {
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
         var employees = await _employeeService.GetAllEmployeesAsync();
-        return Ok(employees);
+        return Success(employees, HttpStatusCode.OK, "Lấy danh sách thành công");
     }
     [HttpPost]
     public async Task<IActionResult> Create(Employee employee)
@@ -20,11 +21,11 @@ public class EmployeeController(IEmployeeService _employeeService) : ControllerB
         try
         {
             await _employeeService.CreateEmployeeAsync(employee);
-            return StatusCode(201, "Tạo nhân viên thành công");
+            return Success("Data created", HttpStatusCode.OK, "Tạo thành công");
         }
         catch (Exception ex)
         {
-            return BadRequest(ex.Message);
+            return Error<string>("Có lỗi xảy ra", ex.Message, HttpStatusCode.NotFound);
         }
     }
 }

@@ -16,7 +16,7 @@
 
   <ItemGroup>
     <Folder Include="Employee\DTOs\Input\" />
-    <Folder Include="Position\" />
+    <Folder Include="Position\Services\" />
   </ItemGroup>
 
 </Project>
