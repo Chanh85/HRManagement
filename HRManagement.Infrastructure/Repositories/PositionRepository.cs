@@ -34,13 +34,37 @@ namespace HRManagement.Infrastructure.Repositories
         public async Task<IEnumerable<Position>> GetAllAsync()
         {
             using IDbConnection db = connectionFactory.CreateConnection();
-            return await db.QueryAsync<Position>("SELECT * FROM Positions ORDER BY CreatedAt DESC");
+            var sql = "SELECT * FROM Positions INNER JOIN Organizations ON Positions.OrganizationId = Organizations.Id " +
+                "ORDER By Positions.CreatedAt DESC";
+            var result = await db.QueryAsync<Position, OrganizationUnit, Position>(
+                sql,
+                (position, organization) =>
+                {
+                    position.Organization = organization;
+                    return position;
+                },
+                splitOn: "Id"
+                );
+            return result;
         }
 
         public async Task<Position?> GetByIdAsync(Guid id)
         {
             using IDbConnection db = connectionFactory.CreateConnection();
-            return await db.QueryFirstOrDefaultAsync<Position?>("SELECT * FROM Positions WHERE Id = @ID", new {ID = id});
+            var sql = "SELECT * FROM Positions INNER JOIN Organizations ON Positions.OrganizationId = Organizations.Id " +
+                "WHERE Positions.Id = @ID " +
+                "ORDER By Positions.CreatedAt DESC";
+            var result = await db.QueryAsync<Position, OrganizationUnit, Position>(
+                sql,
+                (position, organization) =>
+                {
+                    position.Organization = organization;
+                    return position;
+                },
+                new { ID = id },
+                splitOn: "Id"
+                );
+            return result.FirstOrDefault();
         }
     }
 }
