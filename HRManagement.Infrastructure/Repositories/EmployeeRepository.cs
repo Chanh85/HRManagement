@@ -4,6 +4,7 @@ using HRManagement.Application.Employee.Interfaces;
 using HRManagement.Domain.Entities;
 using HRManagement.Infrastructure.Data;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -20,10 +21,58 @@ namespace HRManagement.Infrastructure.Repositories
             await dbContext.SaveChangesAsync();
         }
 
+        public async Task UpdateAsync(Employee employee)
+        {
+            dbContext.Employees.Update(employee);
+            await dbContext.SaveChangesAsync();
+        }
+
+        public async Task DeleteAsync(Employee employee)
+        {
+            dbContext.Employees.Remove(employee);
+            await dbContext.SaveChangesAsync();
+        }
+
         public async Task<IEnumerable<Employee>> GetAllAsync()
         {
             using IDbConnection db = connectionFactory.CreateConnection();
-            return await db.QueryAsync<Employee>("SELECT * FROM Employees");
+            var sql = "select * " +
+                "from Employees left join Organizations on Employees.OrganizationUnitId = Organizations.Id" +
+                "left join Positions on Employees.PositionId = Positions.Id" +
+                "Order by JoinedDate desc";
+            var employees = await db.QueryAsync<Employee, OrganizationUnit, Position, Employee>(
+                sql,
+                (employee, organization, position) =>
+                {
+                    employee.Organization = organization;
+                    employee.Position = position;
+                    return employee;
+                },
+                splitOn: "Id,Id"
+                );
+            return employees;
+        }
+
+        public async Task<Employee?> GetByIdAsync(Guid Id)
+        {
+            using IDbConnection db = connectionFactory.CreateConnection();
+            var sql = "select * " +
+                "from Employees left join Organizations on Employees.OrganizationUnitId = Organizations.Id" +
+                "left join Positions on Employees.PositionId = Positions.Id" +
+                "where Employees.Id = @ID" +
+                "Order by JoinedDate desc";
+            var employee = await db.QueryAsync<Employee, OrganizationUnit, Position, Employee>(
+                sql,
+                (employee, organization, position) =>
+                {
+                    employee.Organization = organization;
+                    employee.Position = position;
+                    return employee;
+                },
+                new {ID = Id},
+                splitOn: "Id,Id"
+                );
+            return employee.FirstOrDefault();
         }
     }
 }

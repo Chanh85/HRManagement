@@ -14,8 +14,4 @@
     <ProjectReference Include="..\HRManagement.Domain\HRManagement.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Employee\DTOs\Input\" />
-  </ItemGroup>
-
 </Project>
