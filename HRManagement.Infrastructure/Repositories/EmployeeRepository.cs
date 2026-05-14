@@ -27,18 +27,21 @@ namespace HRManagement.Infrastructure.Repositories
             await dbContext.SaveChangesAsync();
         }
 
-        public async Task DeleteAsync(Employee employee)
+        public async Task DeleteAsync(Guid Id)
         {
-            dbContext.Employees.Remove(employee);
-            await dbContext.SaveChangesAsync();
+            var rowsAffected = await dbContext.Employees.Where(e => e.Id == Id).ExecuteDeleteAsync();
+            if (rowsAffected == 0)
+            {
+                throw new Exception("Nhân sự không tồn tại");
+            }
         }
 
         public async Task<IEnumerable<Employee>> GetAllAsync()
         {
             using IDbConnection db = connectionFactory.CreateConnection();
             var sql = "select * " +
-                "from Employees left join Organizations on Employees.OrganizationUnitId = Organizations.Id" +
-                "left join Positions on Employees.PositionId = Positions.Id" +
+                "from Employees left join Organizations on Employees.OrganizationUnitId = Organizations.Id " +
+                "left join Positions on Employees.PositionId = Positions.Id " +
                 "Order by JoinedDate desc";
             var employees = await db.QueryAsync<Employee, OrganizationUnit, Position, Employee>(
                 sql,
@@ -57,9 +60,9 @@ namespace HRManagement.Infrastructure.Repositories
         {
             using IDbConnection db = connectionFactory.CreateConnection();
             var sql = "select * " +
-                "from Employees left join Organizations on Employees.OrganizationUnitId = Organizations.Id" +
-                "left join Positions on Employees.PositionId = Positions.Id" +
-                "where Employees.Id = @ID" +
+                "from Employees left join Organizations on Employees.OrganizationUnitId = Organizations.Id " +
+                "left join Positions on Employees.PositionId = Positions.Id " +
+                "where Employees.Id = @ID " +
                 "Order by JoinedDate desc";
             var employee = await db.QueryAsync<Employee, OrganizationUnit, Position, Employee>(
                 sql,

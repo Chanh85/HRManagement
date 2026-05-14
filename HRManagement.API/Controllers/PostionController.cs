@@ -38,8 +38,9 @@ public class PostionController(IPositionService positionService) : AppController
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateAsync(UpdatePositionDto dto)
+    public async Task<IActionResult> UpdateAsync(Guid Id, UpdatePositionDto dto)
     {
+        if (Id != dto.Id) return Error<string>("ID không khớp", null, HttpStatusCode.BadRequest);
         try
         {
             var result = await positionService.UpdateAsync(dto);

@@ -10,7 +10,7 @@ namespace HRManagement.Application.Employee.Interfaces
         Task<IEnumerable<Domain.Entities.Employee>> GetAllAsync();
 
         Task UpdateAsync(Domain.Entities.Employee employee);
-        Task DeleteAsync(Domain.Entities.Employee employee);
+        Task DeleteAsync(Guid Id);
         Task<Domain.Entities.Employee?> GetByIdAsync(Guid Id);
     }
 }

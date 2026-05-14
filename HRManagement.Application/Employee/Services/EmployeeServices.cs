@@ -61,6 +61,8 @@ namespace HRManagement.Application.Employee.Services
             currentEmployee.IsFirstLogin = dto.IsFirstLogin;
             currentEmployee.OrganizationUnitId = dto.OrganizationUnitId;
             currentEmployee.PositionId = dto.PositionId;
+            currentEmployee.Organization = null;
+            currentEmployee.Position = null;
 
             await employeeRepository.UpdateAsync(currentEmployee);
             return true;
@@ -68,9 +70,7 @@ namespace HRManagement.Application.Employee.Services
 
         public async Task<bool> DeleteEmployeeAsync(Guid Id)
         {
-            var employeeToDelete = await employeeRepository.GetByIdAsync(Id) ??
-                throw new Exception("Nhân sự không tồn tại");
-            await employeeRepository.DeleteAsync(employeeToDelete);
+            await employeeRepository.DeleteAsync(Id);
             return true;
         }
 
