@@ -8,5 +8,9 @@ namespace HRManagement.Application.Employee.Interfaces
     {
         Task AddAsync(Domain.Entities.Employee employee);
         Task<IEnumerable<Domain.Entities.Employee>> GetAllAsync();
+
+        Task UpdateAsync(Domain.Entities.Employee employee);
+        Task DeleteAsync(Guid Id);
+        Task<Domain.Entities.Employee?> GetByIdAsync(Guid Id);
     }
 }

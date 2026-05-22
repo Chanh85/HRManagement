@@ -1,9 +1,5 @@
 ﻿using HRManagement.Application.Employee.Interfaces;
 using HRManagement.Application.Employee.Services;
-using HRManagement.Application.Organization.Interfaces;
-using HRManagement.Application.Organization.Service;
-using HRManagement.Application.Position.Interfaces;
-using HRManagement.Application.Position.Services;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -17,8 +13,6 @@ namespace HRManagement.Application
         {
             // Vì file này nằm cùng project, nó hoàn toàn nhìn thấy 'internal class EmployeeService'
             services.AddScoped<IEmployeeService, EmployeeServices>();
-            services.AddScoped<IOrganizationService, OrganizationService>();
-            services.AddScoped<IPositionService, PositionService>();
             return services;
         }
     }
