@@ -1,8 +1,6 @@
 ﻿using HRManagement.Application.Employee.DTOs.Input;
 using HRManagement.Application.Employee.DTOs.Output;
 using HRManagement.Application.Employee.Interfaces;
-using HRManagement.Application.Organization.Interfaces;
-using HRManagement.Application.Position.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -10,9 +8,7 @@ using System.Text;
 namespace HRManagement.Application.Employee.Services
 {
     public class EmployeeServices(
-        IEmployeeRepository employeeRepository, 
-        IOrganizationRepository organizationRepository, 
-        IPositionRepository positionRepository) : IEmployeeService
+        IEmployeeRepository employeeRepository) : IEmployeeService
     {
         public async Task CreateEmployeeAsync(CreateEmployeeDto dto)
         {
@@ -22,13 +18,11 @@ namespace HRManagement.Application.Employee.Services
                 Code = dto.Code,
                 Email = dto.Email,
                 OtherEmail = dto.OtherEmail,
-                AvatarFileId = dto.AvatarFileId,
+                AvatarFileId = null,
                 PhoneNumber = dto.PhoneNumber,
                 JoinedDate = dto.JoinedDate,
                 DateOfBirth = dto.DateOfBirth,
-                IsFirstLogin = dto.IsFirstLogin,
-                OrganizationUnitId = dto.OrganizationUnitId,
-                PositionId = dto.PositionId,
+                IsFirstLogin = dto.IsFirstLogin
             };
             await employeeRepository.AddAsync(employee);
         }
@@ -38,17 +32,7 @@ namespace HRManagement.Application.Employee.Services
             var currentEmployee = await employeeRepository.GetByIdAsync(dto.Id) ??
                 throw new Exception("Không tồn tại nhân sự");
 
-            if (!string.IsNullOrWhiteSpace(dto.OrganizationUnitId.ToString()) && currentEmployee.OrganizationUnitId != dto.OrganizationUnitId)
-            {
-                var org = await organizationRepository.GetByIdAsync(dto.OrganizationUnitId);
-                if (org == null) throw new Exception("Phòng ban mới không tồn tại!");
-            }
-
-            if (!string.IsNullOrWhiteSpace(dto.PositionId.ToString()) && currentEmployee.PositionId != dto.PositionId)
-            {
-                var pos = await positionRepository.GetByIdAsync(dto.PositionId);
-                if (pos == null) throw new Exception("Chức vụ mới không tồn tại!");
-            }
+          
 
             currentEmployee.Name = dto.Name;
             currentEmployee.Code = dto.Code;
@@ -59,10 +43,6 @@ namespace HRManagement.Application.Employee.Services
             currentEmployee.JoinedDate = dto.JoinedDate;
             currentEmployee.DateOfBirth = dto.DateOfBirth;
             currentEmployee.IsFirstLogin = dto.IsFirstLogin;
-            currentEmployee.OrganizationUnitId = dto.OrganizationUnitId;
-            currentEmployee.PositionId = dto.PositionId;
-            currentEmployee.Organization = null;
-            currentEmployee.Position = null;
 
             await employeeRepository.UpdateAsync(currentEmployee);
             return true;
@@ -84,10 +64,6 @@ namespace HRManagement.Application.Employee.Services
                 Code = e.Code,
                 Email = e.Email,
                 OtherEmail = e.OtherEmail,
-                OrganizationUnitId = e.OrganizationUnitId,
-                OrganizationName = e.Organization?.DisplayName?? "N/A",
-                PositionId = e.PositionId,
-                PositionName = e.Position?.Name?? "N/A",
                 AvatarFileId = e.AvatarFileId,
                 PhoneNumber = e.PhoneNumber,
                 JoinedDate = e.JoinedDate,
@@ -95,6 +71,14 @@ namespace HRManagement.Application.Employee.Services
             });
         }
 
+
+        /// <summary>
+        /// Retrieves an employee by their unique identifier and returns the employee information as a DTO.
+        /// </summary>
+        /// <param name="Id">The unique identifier of the employee.</param>
+        /// <returns>An EmployeeOutputDto containing the employee's information including name, code, email, organization,
+        /// position, and other details.</returns>
+        /// <exception cref="Exception">Thrown when the employee with the specified ID does not exist.</exception>
         public async Task<EmployeeOutputDto> GetEmployeeById(Guid Id)
         {
             var employee = await employeeRepository.GetByIdAsync(Id) ??
@@ -106,10 +90,6 @@ namespace HRManagement.Application.Employee.Services
                 Code = employee.Code,
                 Email = employee.Email,
                 OtherEmail = employee.OtherEmail,
-                OrganizationUnitId = employee.OrganizationUnitId,
-                OrganizationName = employee.Organization?.DisplayName?? "N/A",
-                PositionId = employee.PositionId,
-                PositionName = employee.Position?.Name?? "N/A",
                 AvatarFileId = employee.AvatarFileId,
                 PhoneNumber = employee.PhoneNumber,
                 JoinedDate = employee.JoinedDate,

@@ -17,12 +17,8 @@ namespace HRManagement.Domain.Entities
         public DateTime? DateOfBirth { get; set; } // Ngày sinh
         public bool IsFirstLogin { get; set; } // Lần đầu đăng nhập ?
 
-        // Khoá ngoại trỏ về Phòng ban
-        public Guid? OrganizationUnitId { get; set; } // Phòng ban
-        public OrganizationUnit? Organization { get; set; }
-
-        // Khoá ngoại trỏ về Chức vụ
-        public Guid? PositionId { get; set; } // Chức vụ trong phòng ban
-        public Position? Position { get; set; }
+        // Khóa ngoại trỏ về Role
+        public Guid RoleId { get; set; }
+        public Role? Role { get; set; }
     }
 }

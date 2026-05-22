@@ -36,46 +36,44 @@ namespace HRManagement.Infrastructure.Repositories
             }
         }
 
-        public async Task<IEnumerable<Employee>> GetAllAsync()
-        {
-            using IDbConnection db = connectionFactory.CreateConnection();
-            var sql = "select * " +
-                "from Employees left join Organizations on Employees.OrganizationUnitId = Organizations.Id " +
-                "left join Positions on Employees.PositionId = Positions.Id " +
-                "Order by JoinedDate desc";
-            var employees = await db.QueryAsync<Employee, OrganizationUnit, Position, Employee>(
-                sql,
-                (employee, organization, position) =>
-                {
-                    employee.Organization = organization;
-                    employee.Position = position;
-                    return employee;
-                },
-                splitOn: "Id,Id"
-                );
-            return employees;
-        }
+
 
         public async Task<Employee?> GetByIdAsync(Guid Id)
         {
             using IDbConnection db = connectionFactory.CreateConnection();
-            var sql = "select * " +
-                "from Employees left join Organizations on Employees.OrganizationUnitId = Organizations.Id " +
-                "left join Positions on Employees.PositionId = Positions.Id " +
-                "where Employees.Id = @ID " +
-                "Order by JoinedDate desc";
-            var employee = await db.QueryAsync<Employee, OrganizationUnit, Position, Employee>(
+            var sql = @"select * 
+                        from Employees left join Roles on Employees.RoleId = Roles.Id 
+                        where Employees.Id = @Id 
+                        order by JoinedDate desc";
+            var employee = await db.QueryAsync<Employee, Role, Employee>(
                 sql,
-                (employee, organization, position) =>
+                (employee, role) =>
                 {
-                    employee.Organization = organization;
-                    employee.Position = position;
+                    employee.RoleId = role.Id;
                     return employee;
                 },
                 new {ID = Id},
-                splitOn: "Id,Id"
+                splitOn: "Id, Id"
                 );
             return employee.FirstOrDefault();
+        }
+
+        public async Task<IEnumerable<Employee>> GetAllAsync()
+        {
+            using IDbConnection db = connectionFactory.CreateConnection();
+            var sql = @"select * 
+                        from Employees left join Roles on Employees.RoleId = Roles.Id 
+                        order by JoinedDate desc";
+            var employees = await db.QueryAsync<Employee, Role, Employee>(
+                sql,
+                (employee, role) =>
+                {
+                    employee.RoleId = role.Id;
+                    return employee;
+                },
+                splitOn: "Id, Id"
+                );
+            return employees;
         }
     }
 }

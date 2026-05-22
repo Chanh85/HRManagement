@@ -12,10 +12,7 @@ namespace HRManagement.Application.Employee.DTOs.Output
         public string Code { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty; // Email cá nhân
         public string? OtherEmail { get; set; } // Email khác
-        public Guid? OrganizationUnitId { get; set; } // Phòng ban
-        public string OrganizationName { get; set; }
-        public Guid? PositionId { get; set; } // Chức vụ trong phòng ban
-        public string PositionName { get; set; }
+        public string Role { get; set; } = string.Empty;
         public Guid? AvatarFileId { get; set; } // Ảnh đại diện
         public string PhoneNumber { get; set; } = string.Empty; // Số điện thoại cá nhân
         public DateTime? JoinedDate { get; set; } // Ngày vào
